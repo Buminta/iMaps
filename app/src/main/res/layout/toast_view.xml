@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/like_popup_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/rounded_border_black"
+    android:layout_gravity="center"
+    >
+    <RelativeLayout
+        android:id="@+id/contentBar"
+        android:layout_width="fill_parent"
+        android:background="@drawable/tab_title"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/activity_bar_height">
+        <ImageView
+            android:id="@+id/like_popup_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_action_about"/>
+        <TextView
+            android:id="@+id/textBar"
+            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:text="Title of toast"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/like_popup_iv"
+            android:layout_toEndOf="@+id/like_popup_iv"/>
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/like_popup_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Messages of toast"
+        android:textColor="@android:color/white"
+        android:layout_gravity="left|center_vertical"
+        android:layout_below="@+id/contentBar"
+        android:layout_alignLeft="@+id/contentBar"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_alignStart="@+id/contentBar"/>
+</RelativeLayout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listBottom"
+    android:layout_width="fill_parent"
+    android:orientation="horizontal"
+    android:gravity="bottom"
+    android:layout_height="wrap_content">
+    <Button
+        android:layout_weight="20"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_btn_bt"
+        android:layout_centerHorizontal="true"
+        android:onClick="placeView"
+        android:id="@+id/location"
+        android:tag="location"
+        android:text="Địa điểm"/>
+    <Button
+        android:layout_weight="20"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_btn_bt"
+        android:layout_centerHorizontal="true"
+        android:onClick="placeView"
+        android:tag="driving"
+        android:id="@+id/driving"
+        android:text="Lái xe"/>
+    <Button
+        android:layout_weight="20"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_btn_bt"
+        android:layout_centerHorizontal="true"
+        android:onClick="placeView"
+        android:tag="add"
+        android:id="@+id/add"
+        android:text="Thêm địa điểm"/>
+    <Button
+        android:layout_weight="20"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_btn_bt"
+        android:layout_centerHorizontal="true"
+        android:onClick="placeView"
+        android:tag="settings"
+        android:id="@+id/settings"
+        android:text="Thiết lập"/>
+    <Button
+        android:layout_weight="20"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/flat_btn_bt"
+        android:layout_centerHorizontal="true"
+        android:onClick="placeView"
+        android:tag="note"
+        android:id="@+id/note"
+        android:text="Ghi chú"/>
+</LinearLayout>

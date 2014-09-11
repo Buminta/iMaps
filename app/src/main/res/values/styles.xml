@@ -1,0 +1,20 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="frame_pop">
+        <item name="android:background">@drawable/bubble_white</item>
+        <item name="android:shadowColor">@color/list_background</item>
+    </style>
+
+    <style name="frame_pop_red">
+        <item name="android:background">@drawable/square</item>
+    </style>
+
+    <style name="frame_pop_log">
+        <item name="android:background">@drawable/square_no_border</item>
+    </style>
+</resources>
