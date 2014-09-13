@@ -2,6 +2,7 @@ package net.windjs.imaps;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -62,6 +64,8 @@ import adapter.DirectionsJSONParser;
 import adapter.MapBoxMixedTileProvider;
 import adapter.PlaceDetailsJSONParser;
 import adapter.PlaceJSONParser;
+import adapter.PopupMarkerAdapter;
+import global.GlobalClass;
 import model.MultiDrawable;
 import model.MyItem;
 import model.MyToast;
@@ -117,24 +121,20 @@ public class MapsFragment extends Fragment {
         return rootView;
     }
 
-    public LatLng getMyLocation(){
+    public LatLng getMyLocation() {
         return myLocation;
     }
 
-    public String getMySpeed(){
+    public String getMySpeed() {
         return mySpeed;
     }
 
     private void mapListener() {
+//        map.setInfoWindowAdapter(new PopupMarkerAdapter(getActivity().getLayoutInflater()));
         map.setOnCameraChangeListener(mClusterManager);
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                FrameLayout showContentMarker = (FrameLayout) rootView.findViewById(R.id.showContentMarker);
-                Animation inAnimBG = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.abc_fade_in);
-                showContentMarker.setVisibility(View.VISIBLE);
-                showContentMarker.startAnimation(inAnimBG);
-
                 mClusterManager.onMarkerClick(marker);
                 return false;
             }
@@ -161,23 +161,31 @@ public class MapsFragment extends Fragment {
 
         map.setOnMarkerClickListener(mClusterManager);
         map.setOnInfoWindowClickListener(mClusterManager);
+
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<MyItem>() {
+            @Override
+            public boolean onClusterItemClick(MyItem item) {
+                showMarkerPop(item);
+                return false;
+            }
+        });
     }
 
-    private void fixMapView(CameraPosition cameraPosition){
+    private void fixMapView(CameraPosition cameraPosition) {
         float z = cameraPosition.zoom;
         double lat = cameraPosition.target.latitude;
         double longi = cameraPosition.target.longitude;
 
-        if(z < 5.0) z = 5;
-        if(z > 18) z = 18;
+        if (z < 5.0) z = 5;
+        if (z > 18) z = 18;
 
-        if(lat < 5) lat = 5;
-        if(lat > 25) lat = 25;
-        if(longi < 100) longi = 100;
-        if(longi > 115) longi = 115;
+        if (lat < 5) lat = 5;
+        if (lat > 25) lat = 25;
+        if (longi < 100) longi = 100;
+        if (longi > 115) longi = 115;
 
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, longi), z));
-        LatLngBounds visibleBounds =  map.getProjection().getVisibleRegion().latLngBounds;
+        LatLngBounds visibleBounds = map.getProjection().getVisibleRegion().latLngBounds;
     }
 
     public void hideKeyboard(View view) {
@@ -186,6 +194,15 @@ public class MapsFragment extends Fragment {
     }
 
     private void listenerEvent() {
+
+        FrameLayout info = (FrameLayout) rootView.findViewById(R.id.showContentMarker);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewDetailsMarket(v);
+            }
+        });
+
 //        textSearch = (EditText) rootView.findViewById(R.id.editText);
 //        textSearch.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 //            @Override
@@ -266,11 +283,10 @@ public class MapsFragment extends Fragment {
 //    }
 
     private void makeDirections(LatLng from, LatLng to) {
-        try{
+        try {
             polyline.remove();
             marker.remove();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 
         }
         MarkerOptions options = new MarkerOptions();
@@ -361,47 +377,46 @@ public class MapsFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            if(jObject != null){
+            if (jObject != null) {
                 JSONObject routesJSON = null;
                 try {
                     routesJSON = (JSONObject) jObject.getJSONArray("routes").get(0);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(routesJSON != null){
+                if (routesJSON != null) {
                     JSONArray legsJSON = null;
                     try {
                         legsJSON = routesJSON.getJSONArray("legs");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    if(legsJSON != null){
+                    if (legsJSON != null) {
                         JSONObject des = null;
                         try {
                             des = (JSONObject) legsJSON.get(legsJSON.length() - 1);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        if(des != null){
+                        if (des != null) {
                             JSONObject desDetails = null;
                             try {
                                 desDetails = (JSONObject) des.get("distance");
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            if(desDetails != null){
+                            if (desDetails != null) {
                                 MyToast toast = new MyToast(rootView.getContext());
                                 toast.setTitle("Ước tính quãng đường");
                                 try {
                                     String tmp = "";
-                                    Double km = Double.valueOf(desDetails.getString("value"))/1000.00;
-                                    tmp += "Độ dài: "+String.valueOf(km) +" km";
+                                    Double km = Double.valueOf(desDetails.getString("value")) / 1000.00;
+                                    tmp += "Độ dài: " + String.valueOf(km) + " km";
                                     tmp += " - ";
-                                    if(Double.valueOf(mySpeed) != 0.00){
-                                        Double hour = km/Double.valueOf(mySpeed);
-                                        tmp += "Thời gian: "+ String.valueOf(hour) +" giờ";
-                                    }
-                                    else{
+                                    if (Double.valueOf(mySpeed) != 0.00) {
+                                        Double hour = km / Double.valueOf(mySpeed);
+                                        tmp += "Thời gian: " + String.valueOf(hour) + " giờ";
+                                    } else {
                                         tmp += "Thời gian: không xác định";
                                     }
                                     toast.setText(tmp);
@@ -485,6 +500,7 @@ public class MapsFragment extends Fragment {
     }
 
     private void onGetSpeed() {
+        final GlobalClass globalClass = (GlobalClass) getActivity().getApplicationContext();
         locationManager = (LocationManager) rootView.getContext().getSystemService(Context.LOCATION_SERVICE);
 //        final TextView textSpeed = (TextView) rootView.findViewById(R.id.speec_value);
         locationListener = new LocationListener() {
@@ -494,11 +510,15 @@ public class MapsFragment extends Fragment {
                 LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                 myLocation = latLng;
 
-                if(desLocation != null){
-                    makeDirections(myLocation, desLocation);
+                if(globalClass.isDrivingBoard()){
                     map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                    DrivingFragment driving = (DrivingFragment) getFragmentManager().findFragmentById(R.id.frame_fragment);
+                    driving.setSpeed(location.getSpeed());
                 }
-                else if (!startLocation) {
+                if (desLocation != null) {
+                    makeDirections(myLocation, desLocation);
+                }
+                if (!startLocation) {
                     startLocation = true;
                     map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                 }
@@ -585,19 +605,58 @@ public class MapsFragment extends Fragment {
         TileOverlay overlay = map.addTileOverlay(opts);
     }
 
-    public void addItemCluster(MyItem item){
+    public void addItemCluster(MyItem item) {
         mClusterManager.addItem(item);
     }
 
-    public void cluster(){
+    public void cluster() {
         mClusterManager.cluster();
     }
 
-    public void clearCluster(){
-        FrameLayout showContentMarker = (FrameLayout) rootView.findViewById(R.id.showContentMarker);
-        Animation inAnimBG = AnimationUtils.loadAnimation(rootView.getContext(), R.anim.abc_fade_out);
-        showContentMarker.setVisibility(View.GONE);
-        showContentMarker.startAnimation(inAnimBG);
+    public void clearCluster() {
+        FrameLayout info = (FrameLayout) rootView.findViewById(R.id.showContentMarker);
+        Animation inAnim = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.abc_fade_out);
+        info.setVisibility(View.GONE);
+        info.startAnimation(inAnim);
         mClusterManager.clearItems();
+    }
+
+    public void showMarkerPop(MyItem item){
+        FrameLayout info = (FrameLayout) rootView.findViewById(R.id.showContentMarker);
+
+        ((TextView) info.findViewById(R.id.textName)).setText(item.name);
+        ((TextView) info.findViewById(R.id.textLocation)).setText(item.getPosition().toString());
+
+        Animation inAnim = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.abc_fade_in);
+        info.setVisibility(View.VISIBLE);
+        info.startAnimation(inAnim);
+    }
+
+    public void viewDetailsMarket(View v) {
+        GlobalClass globalVariable = (GlobalClass) getActivity().getApplicationContext();
+        globalVariable.setOldFragmentS("details_market");
+        Fragment fragmentOld = getFragmentManager().findFragmentById(R.id.frame_fragment);
+        if (fragmentOld != null)
+            try {
+                getFragmentManager().beginTransaction().remove(fragmentOld).commit();
+            } catch (Exception e) {
+
+            }
+
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = new DetailsMarketFragment();
+        if (fragment != null) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame_fragment, fragment).commit();
+        }
+
+        FrameLayout frame = (FrameLayout) getActivity().findViewById(R.id.frame_fragment);
+        Animation inAnim = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.abc_slide_in_bottom);
+        Animation inAnimBG = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.abc_fade_in);
+        FrameLayout frameBG = (FrameLayout) getActivity().findViewById(R.id.frame_fragment_bg);
+        frame.setVisibility(View.VISIBLE);
+        frame.startAnimation(inAnim);
+        frameBG.setVisibility(View.VISIBLE);
+        frameBG.startAnimation(inAnimBG);
     }
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <adapter.SpeedBoard
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="300dp"
+        android:layout_width="300dp"
+        android:padding="8dp"
+        android:id="@+id/speedometer" />
+
+    <TextView
+        android:layout_gravity="center_horizontal"
+        android:layout_width="fill_parent"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:padding="10dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/square"
+        android:layout_height="wrap_content"
+        android:text="Lê Thanh Nghị"/>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:background="@drawable/square"
+        android:padding="10dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="Còn khoảng 5km đến vị trí bắn tốc độ"/>
+
+        <ImageView
+            android:background="@drawable/round"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="right"/>
+        </FrameLayout>
+
+    <FrameLayout
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_gravity="right|center_vertical"
+            android:layout_width="200dp"
+            android:layout_height="100dp" />
+
+        <Button
+            android:layout_gravity="left|center_vertical"
+            android:layout_width="200dp"
+            android:layout_height="100dp" />
+    </FrameLayout>
+</LinearLayout>

@@ -13,6 +13,8 @@ public class GlobalClass extends Application{
     private float zoomFloat;
     private String oldFragmentS = "";
 
+    private boolean drivingBoard = false;
+
 
     public String getName() {
 
@@ -57,5 +59,13 @@ public class GlobalClass extends Application{
 
     public void setOldFragmentS(String oldFragmentS) {
         this.oldFragmentS = oldFragmentS;
+    }
+
+    public boolean isDrivingBoard() {
+        return drivingBoard;
+    }
+
+    public void setDrivingBoard(boolean drivingBoard) {
+        this.drivingBoard = drivingBoard;
     }
 }

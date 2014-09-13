@@ -123,6 +123,16 @@ public class StartActivity extends Activity {
         hideBtnActived();
         v.setActivated(true);
         String tags = v.getTag().toString();
+        try {
+            displayView(tags);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+
         FrameLayout frameBtn = (FrameLayout) findViewById(R.id.frame_fragment);
 
         GlobalClass globalVariable = (GlobalClass) getApplicationContext();
@@ -134,15 +144,8 @@ public class StartActivity extends Activity {
             frameBtn.startAnimation(inAnim);
             frameBG.setVisibility(View.VISIBLE);
             frameBG.startAnimation(inAnimBG);
-        }
-        try {
-            displayView(tags);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+
+            globalVariable.setOldFragmentS(tags);
         }
     }
 
@@ -156,17 +159,17 @@ public class StartActivity extends Activity {
             fragment = new LocationsFragment();
             textView.setText("Địa điểm");
         } else if (tags.equals("driving")) {
-            fragment = new LocationsFragment();
+            fragment = new DrivingFragment();
             textView.setText("Lái xe");
         } else if (tags.equals("add")) {
             textView.setText("Thêm địa điểm");
-            fragment = new LocationsFragment();
+            fragment = new AddLocationFragment();
         } else if (tags.equals("settings")) {
             textView.setText("Thiết lập");
-            fragment = new LocationsFragment();
+            fragment = new SettingsFragment();
         } else if (tags.equals("note")) {
             textView.setText("Ghi chú");
-            fragment = new LocationsFragment();
+            fragment = new NoteFragment();
         }
 
         GlobalClass globalVariable = (GlobalClass) getApplicationContext();
@@ -179,8 +182,6 @@ public class StartActivity extends Activity {
                 } catch (Exception e) {
 
                 }
-
-            globalVariable.setOldFragmentS(tags);
 
             FragmentManager fragmentManager = getFragmentManager();
 
@@ -208,4 +209,5 @@ public class StartActivity extends Activity {
         toast.setTitle("On Back pressed");
         toast.show();
     }
+
 }

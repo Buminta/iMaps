@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/showContentMarker"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="100dp"
+    android:visibility="gone"
+    android:background="#555"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="120dp">
+
+        <TextView
+            android:id="@+id/textName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Market name"
+            android:textColor="#fff"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_action_star" />
+
+        <TextView
+            android:id="@+id/textLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textName"
+            android:text="164 Lê Thanh Nghị"
+            android:textColor="#fff" />
+
+        <TextView
+            android:id="@+id/commentLast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textLocation"
+            android:text="Tan Bui: Quán đông quá"
+            android:textColor="#fff" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="35dp"
+        android:layout_gravity="bottom"
+        android:layout_marginRight="120dp"
+        android:background="@drawable/rounded_border_white"
+        android:hint="Bình luận"
+        android:inputType="textAutoComplete"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:textColor="#555" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal|right"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/round" />
+</FrameLayout>

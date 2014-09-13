@@ -6,7 +6,7 @@
         android:startColor="#f45d5d"
         android:centerColor="#f45d5d"
         android:endColor="#f45d5d"/>
-    <size android:height="@dimen/activity_bottom_height_hover"/>
+    <size android:height="@dimen/activity_bottom_height"/>
 
     <stroke
         android:width="2dp"

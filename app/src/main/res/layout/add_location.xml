@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbarStyle="insideOverlay"
+    android:layout_marginTop="50dp"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layoutView1"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#555"
+                android:padding="20dp"
+                android:text="Biển báo giao thông" />
+            <model.ExpandableHeightGridView
+                android:id="@+id/gridView1"
+                android:gravity="center"
+                android:numColumns="auto_fit"
+                android:columnWidth="150dp"
+                android:verticalSpacing="10dp"
+                android:visibility="gone"
+                android:horizontalSpacing="10dp"
+                android:stretchMode="none"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                </model.ExpandableHeightGridView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutView2"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#555"
+                android:padding="20dp"
+                android:text="Tắc đường, tai nạn, ngập lụt" />
+
+            <model.ExpandableHeightGridView
+                android:id="@+id/gridView2"
+                android:gravity="center"
+                android:numColumns="auto_fit"
+                android:columnWidth="150dp"
+                android:verticalSpacing="10dp"
+                android:visibility="gone"
+                android:horizontalSpacing="10dp"
+                android:stretchMode="none"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </model.ExpandableHeightGridView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutView3"
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#555"
+                android:padding="20dp"
+                android:text="@string/police" />
+
+            <model.ExpandableHeightGridView
+                android:id="@+id/gridView3"
+                android:gravity="center"
+                android:numColumns="auto_fit"
+                android:columnWidth="150dp"
+                android:verticalSpacing="10dp"
+                android:visibility="gone"
+                android:horizontalSpacing="10dp"
+                android:stretchMode="none"
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </model.ExpandableHeightGridView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</ScrollView>
