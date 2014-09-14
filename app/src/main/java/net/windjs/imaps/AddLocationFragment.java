@@ -2,6 +2,7 @@ package net.windjs.imaps;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,16 @@ public class AddLocationFragment extends Fragment{
         super.onCreate(savedInstanceState);
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.add_location, container, false);
+
+        SwipeRefreshLayout scroll = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+        scroll.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                StartActivity activity = (StartActivity) getActivity();
+                activity.placeHide();
+            }
+        });
+
 
         onEventListener();
         return rootView;
