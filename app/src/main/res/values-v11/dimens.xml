@@ -4,15 +4,17 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="activity_margin">12dp</dimen>
-    <dimen name="activity_bar_height">35dp</dimen>
+    <dimen name="activity_bar_height">30dp</dimen>
+    <dimen name="activity_bottom_height">80dp</dimen>
+    <dimen name="activity_bottom_height_hover">100dp</dimen>
     <dimen name="pop_main_height">200dp</dimen>
     <dimen name="map_height">300dp</dimen>
-    <dimen name="custom_profile_image">50dp</dimen>
+    <dimen name="custom_profile_image">30dp</dimen>
     <dimen name="custom_profile_padding">2dp</dimen>
 
 
     <!--Round-->
-    <dimen name="round_radius">50dp</dimen>
-    <dimen name="round_width">100dp</dimen>
+    <dimen name="round_radius">100dp</dimen>
+    <dimen name="round_width">200dp</dimen>
 
 </resources>
