@@ -22,14 +22,14 @@ public class DetailsMarketFragment extends Fragment {
         super.onCreate(savedInstanceState);
         this.inflater = inflater;
         rootView = inflater.inflate(R.layout.market_fragment, container, false);
-        final SwipeRefreshLayout scroll = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
-        scroll.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                StartActivity activity = (StartActivity) getActivity();
-                activity.placeHide();
-            }
-        });
+//        final SwipeRefreshLayout scroll = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+//        scroll.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                StartActivity activity = (StartActivity) getActivity();
+//                activity.placeHide();
+//            }
+//        });
 
         ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.view_pager);
         ImagePagerAdapter adapter = new ImagePagerAdapter();

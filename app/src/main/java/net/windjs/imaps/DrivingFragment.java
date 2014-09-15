@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.MapFragment;
 
+import java.util.Random;
+
 import adapter.SpeedBoard;
 import global.GlobalClass;
 import model.MyToast;
@@ -41,12 +43,8 @@ public class DrivingFragment extends Fragment {
         // configure value range and ticks
         speedometer.setMaxSpeed(300);
         speedometer.setMajorTickStep(30);
-        speedometer.setMinorTicks(2);
-
-        // Configure value range colors
-        speedometer.addColoredRange(30, 140, Color.GREEN);
-        speedometer.addColoredRange(140, 180, Color.YELLOW);
-        speedometer.addColoredRange(180, 400, Color.RED);
+        speedometer.setMinorTicks(4);
+        speedometer.setMaxMinor(10);
 
         GlobalClass globalClass = (GlobalClass) getActivity().getApplicationContext();
         globalClass.setDrivingBoard(true);
@@ -66,6 +64,7 @@ public class DrivingFragment extends Fragment {
         MyToast t = new MyToast(getActivity().getApplicationContext());
         t.setText(String.valueOf(speed));
         t.show();
-        speedometer.setSpeed(speed);
+//        speedometer.setSpeed(speed);
+        speedometer.setSpeed((new Random()).nextInt(300));
     }
 }

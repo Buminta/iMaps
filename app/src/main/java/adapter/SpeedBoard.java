@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
@@ -29,28 +30,31 @@ public class SpeedBoard extends View {
 
     public static final double DEFAULT_MAX_SPEED = 100.0;
     public static final double DEFAULT_MAJOR_TICK_STEP = 20.0;
-    public static final int DEFAULT_MINOR_TICKS = 1;
-    public static final int DEFAULT_LABEL_TEXT_SIZE_DP = 12;
+    public static final int DEFAULT_MINOR_TICKS = 4;
+    public static final int DEFAULT_MINOR = 10;
+    public static final int DEFAULT_LABEL_TEXT_SIZE_DP = 40;
 
     private double maxSpeed = DEFAULT_MAX_SPEED;
+    private float maxMinor = DEFAULT_MINOR;
     private double speed = 0;
     private int defaultColor = Color.rgb(180, 180, 180);
     private double majorTickStep = DEFAULT_MAJOR_TICK_STEP;
     private int minorTicks = DEFAULT_MINOR_TICKS;
     private LabelConverter labelConverter;
 
-    private List<ColoredRange> ranges = new ArrayList<ColoredRange>();
-
-    private Paint backgroundPaint;
     private Paint backgroundInnerPaint;
-    private Paint maskPaint;
     private Paint needlePaint;
     private Paint ticksPaint;
     private Paint txtPaint;
     private Paint colorLinePaint;
     private int labelTextSize;
+    private Paint backgroundneedlePaint;
+    private Paint backgroundmeedlePaint;
+    private Paint needlePaintBorder;
+    private Paint ticksMinPaint;
+    private Paint speedPaint;
+    private Paint speedPaintKm;
 
-    private Bitmap mMask;
 
     public SpeedBoard(Context context) {
         super(context);
@@ -89,6 +93,12 @@ public class SpeedBoard extends View {
             throw new IllegalArgumentException("Non-positive value specified as max speed.");
         this.maxSpeed = maxSpeed;
         invalidate();
+    }
+
+    public void setMaxMinor(int i){
+        if (i <= 0)
+            throw new IllegalArgumentException("Non-positive value specified as max speed.");
+        this.maxMinor = i;
     }
 
     public double getSpeed() {
@@ -175,22 +185,6 @@ public class SpeedBoard extends View {
         invalidate();
     }
 
-    public void clearColoredRanges() {
-        ranges.clear();
-        invalidate();
-    }
-
-    public void addColoredRange(double begin, double end, int color) {
-        if (begin >= end)
-            throw new IllegalArgumentException("Incorrect number range specified!");
-        if (begin < - 5.0/160* maxSpeed)
-            begin = - 5.0/160* maxSpeed;
-        if (end > maxSpeed * (5.0/160 + 1))
-            end = maxSpeed * (5.0/160 + 1);
-        ranges.add(new ColoredRange(color, begin, end));
-        invalidate();
-    }
-
     public int getLabelTextSize() {
         return labelTextSize;
     }
@@ -248,11 +242,11 @@ public class SpeedBoard extends View {
 
         if (height >= 0 && width >= 0) {
             width = Math.min(height, width);
-            height = width/2;
+            height = width;
         } else if (width >= 0) {
-            height = width/2;
+            height = width;
         } else if (height >= 0) {
-            width = height*2;
+            width = height;
         } else {
             width = 0;
             height = 0;
@@ -263,83 +257,96 @@ public class SpeedBoard extends View {
     }
 
     private void drawNeedle(Canvas canvas) {
+        float majorTicksLength = 30;
         RectF oval = getOval(canvas, 1);
-        float radius = oval.width()*0.35f + 10;
-        RectF smallOval = getOval(canvas, 0.2f);
+        float radius = oval.width()/2.0f-majorTicksLength*1.5f;
 
-        float angle = 10 + (float) (getSpeed()/ getMaxSpeed()*160);
+
+        float angle = 115 + (float) (getSpeed()*260/ getMaxSpeed());
+
+        canvas.save();
+        canvas.rotate(angle, oval.centerX(), oval.centerY());
         canvas.drawLine(
-                (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * smallOval.width()*0.5f),
-                (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * smallOval.width()*0.5f),
-                (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * (radius)),
-                (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * (radius)),
+                oval.centerX(),
+                oval.centerY(),
+                oval.centerX() + radius,
+                oval.centerY(),
+                needlePaintBorder
+        );
+        canvas.drawLine(
+                oval.centerX(),
+                oval.centerY(),
+                oval.centerX() + radius,
+                oval.centerY(),
                 needlePaint
         );
+        canvas.restore();
 
+        RectF innerOval = getOval(canvas, 0.1f);
+        canvas.drawArc(innerOval, 0, 360, true, backgroundneedlePaint);
 
-        canvas.drawArc(smallOval, 180, 180, true, backgroundPaint);
+        canvas.save();
+        canvas.drawText(String.valueOf((float) getSpeed()), oval.centerX()+oval.width()/4, oval.centerY()+oval.width()/4, speedPaint);
+        canvas.drawText("Km/h", oval.centerX()+oval.width()/4, oval.centerY()+oval.width()/4, speedPaintKm);
+        canvas.restore();
     }
 
     private void drawTicks(Canvas canvas) {
-        float availableAngle = 160;
-        float majorStep = (float) (majorTickStep/ maxSpeed *availableAngle);
-        float minorStep = majorStep / (1 + minorTicks);
+        float availableAngle = 260;
+        float majorStep = (float) (availableAngle/maxMinor);
+        int majorTicks = (1 + minorTicks);
+        float minorStep = majorStep/majorTicks;
 
         float majorTicksLength = 30;
-        float minorTicksLength = majorTicksLength/2;
+        float minorTicksLength = majorTicksLength/4;
 
         RectF oval = getOval(canvas, 1);
-        float radius = oval.width()*0.35f;
+        float radius = oval.width()/2.0f;
 
-        float currentAngle = 10;
-        double curProgress = 0;
-        while (currentAngle <= 170) {
+        float currentAngle = 115;
+        float curProgress = 0;
+        float majorSpeed = (float)maxSpeed/maxMinor;
+
+        while (currentAngle <= 375) {
 
             canvas.drawLine(
-                    (float) (oval.centerX() + Math.cos((180-currentAngle)/180*Math.PI)*(radius-majorTicksLength/2)),
-                    (float) (oval.centerY() - Math.sin(currentAngle/180*Math.PI)*(radius-majorTicksLength/2)),
-                    (float) (oval.centerX() + Math.cos((180-currentAngle)/180*Math.PI)*(radius+majorTicksLength/2)),
-                    (float) (oval.centerY() - Math.sin(currentAngle/180*Math.PI)*(radius+majorTicksLength/2)),
+                    (float) (oval.centerX() + Math.cos(Math.toRadians(currentAngle))*(radius-majorTicksLength)),
+                    (float) (oval.centerY() + Math.sin(Math.toRadians(currentAngle))*(radius-majorTicksLength)),
+                    (float) (oval.centerX() + Math.cos(Math.toRadians(currentAngle))*radius),
+                    (float) (oval.centerY() + Math.sin(Math.toRadians(currentAngle))*radius),
                     ticksPaint
             );
 
-            for (int i=1; i<=minorTicks; i++) {
-                float angle = currentAngle + i*minorStep;
-                if (angle >= 170 + minorStep/2) {
+            float maxAngle = currentAngle + majorStep;
+
+            for(float i=currentAngle+minorStep; i<maxAngle; i+=minorStep){
+                if(currentAngle >= 375){
                     break;
                 }
                 canvas.drawLine(
-                        (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * radius),
-                        (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * radius),
-                        (float) (oval.centerX() + Math.cos((180 - angle) / 180 * Math.PI) * (radius + minorTicksLength)),
-                        (float) (oval.centerY() - Math.sin(angle / 180 * Math.PI) * (radius + minorTicksLength)),
-                        ticksPaint
+                        (float) (oval.centerX() + Math.cos(Math.toRadians(i))*(radius-majorTicksLength+minorTicksLength)),
+                        (float) (oval.centerY() + Math.sin(Math.toRadians(i))*(radius-majorTicksLength+minorTicksLength)),
+                        (float) (oval.centerX() + Math.cos(Math.toRadians(i))*(radius-minorTicksLength)),
+                        (float) (oval.centerY() + Math.sin(Math.toRadians(i))*(radius-minorTicksLength)),
+                        ticksMinPaint
                 );
             }
 
             if (labelConverter != null) {
 
                 canvas.save();
-                canvas.rotate(180 + currentAngle, oval.centerX(), oval.centerY());
-                float txtX = oval.centerX() + radius + majorTicksLength/2 + 8;
+                canvas.rotate(currentAngle, oval.centerX(), oval.centerY());
+                float txtX = oval.centerX() + radius - majorTicksLength - labelTextSize*1.5f;
                 float txtY = oval.centerY();
                 canvas.rotate(+90, txtX, txtY);
                 canvas.drawText(labelConverter.getLabelFor(curProgress, maxSpeed), txtX, txtY, txtPaint);
                 canvas.restore();
             }
 
-            currentAngle += majorStep;
-            curProgress += majorTickStep;
+            currentAngle = maxAngle;
+            curProgress += majorSpeed;
         }
 
-        RectF smallOval = getOval(canvas, 0.7f);
-        colorLinePaint.setColor(defaultColor);
-        canvas.drawArc(smallOval, 185, 170, false, colorLinePaint);
-
-        for (ColoredRange range: ranges) {
-            colorLinePaint.setColor(range.getColor());
-            canvas.drawArc(smallOval, (float) (190 + range.getBegin()/ maxSpeed *160), (float) ((range.getEnd() - range.getBegin())/ maxSpeed *160), false, colorLinePaint);
-        }
     }
 
     private RectF getOval(Canvas canvas, float factor) {
@@ -347,26 +354,23 @@ public class SpeedBoard extends View {
         final int canvasWidth = canvas.getWidth() - getPaddingLeft() - getPaddingRight();
         final int canvasHeight = canvas.getHeight() - getPaddingTop() - getPaddingBottom();
 
-        if (canvasHeight*2 >= canvasWidth) {
+        if (canvasHeight >= canvasWidth) {
             oval = new RectF(0, 0, canvasWidth*factor, canvasWidth*factor);
         } else {
-            oval = new RectF(0, 0, canvasHeight*2*factor, canvasHeight*2*factor);
+            oval = new RectF(0, 0, canvasHeight*factor, canvasHeight*factor);
         }
 
-        oval.offset((canvasWidth-oval.width())/2 + getPaddingLeft(), (canvasHeight*2-oval.height())/2 + getPaddingTop());
+        oval.offset((canvasWidth-oval.width())/2 + getPaddingLeft(), (canvasHeight-oval.height())/2 + getPaddingTop());
 
         return oval;
     }
 
     private void drawBackground(Canvas canvas) {
-        RectF oval = getOval(canvas, 1);
-        canvas.drawArc(oval, 180, 180, true, backgroundPaint);
+        RectF innerOval = getOval(canvas, 0.6f);
+        canvas.drawArc(innerOval, 0, 360, true, backgroundInnerPaint);
 
-        RectF innerOval = getOval(canvas, 0.9f);
-        canvas.drawArc(innerOval, 180, 180, true, backgroundInnerPaint);
-
-        Bitmap mask = Bitmap.createScaledBitmap(mMask, (int)(oval.width()*1.1), (int)(oval.height()*1.1)/2, true);
-        canvas.drawBitmap(mask, oval.centerX() - oval.width()*1.1f/2, oval.centerY()-oval.width()*1.1f/2, maskPaint);
+        RectF smallOval = getOval(canvas, 0.2f);
+        canvas.drawArc(smallOval, 0, 360, true, backgroundmeedlePaint);
     }
 
     @SuppressWarnings("NewApi")
@@ -375,29 +379,43 @@ public class SpeedBoard extends View {
             setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
-        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        backgroundPaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(Color.rgb(127, 127, 127));
-
         backgroundInnerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundInnerPaint.setStyle(Paint.Style.FILL);
-        backgroundInnerPaint.setColor(Color.rgb(150, 150, 150));
+        backgroundInnerPaint.setColor(Color.parseColor("#ff6861"));
+
+        backgroundneedlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backgroundneedlePaint.setStyle(Paint.Style.FILL);
+        backgroundneedlePaint.setColor(Color.parseColor("#445569"));
+
+        backgroundmeedlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backgroundmeedlePaint.setStyle(Paint.Style.FILL);
+        backgroundmeedlePaint.setColor(Color.parseColor("#f1645b"));
+
+        speedPaintKm = new Paint(Paint.ANTI_ALIAS_FLAG);
+        speedPaintKm.setColor(Color.parseColor("#55445569"));
+        speedPaintKm.setTextSize(labelTextSize);
+        speedPaintKm.setTextAlign(Paint.Align.LEFT);
 
         txtPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        txtPaint.setColor(Color.WHITE);
+        txtPaint.setColor(Color.parseColor("#445569"));
         txtPaint.setTextSize(labelTextSize);
         txtPaint.setTextAlign(Paint.Align.CENTER);
 
-        mMask = BitmapFactory.decodeResource(getResources(), R.drawable.spot_mask);
-        mMask = Bitmap.createBitmap(mMask, 0, 0, mMask.getWidth(), mMask.getHeight()/2);
-
-        maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        maskPaint.setDither(true);
+        speedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        speedPaint.setColor(Color.parseColor("#55445569"));
+        speedPaint.setTextSize(80);
+        speedPaint.setTextAlign(Paint.Align.RIGHT);
 
         ticksPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         ticksPaint.setStrokeWidth(3.0f);
         ticksPaint.setStyle(Paint.Style.STROKE);
-        ticksPaint.setColor(defaultColor);
+        ticksPaint.setColor(Color.parseColor("#445569"));
+
+        ticksMinPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        ticksMinPaint.setStrokeWidth(1.0f);
+        ticksMinPaint.setStyle(Paint.Style.STROKE);
+        ticksMinPaint.setColor(Color.parseColor("#dbdbdb"));
+
 
         colorLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         colorLinePaint.setStyle(Paint.Style.STROKE);
@@ -405,9 +423,14 @@ public class SpeedBoard extends View {
         colorLinePaint.setColor(defaultColor);
 
         needlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        needlePaint.setStrokeWidth(5);
+        needlePaint.setStrokeWidth(3);
         needlePaint.setStyle(Paint.Style.STROKE);
-        needlePaint.setColor(Color.argb(200, 255, 0, 0));
+        needlePaint.setColor(Color.parseColor("#ff6861"));
+
+        needlePaintBorder = new Paint(Paint.ANTI_ALIAS_FLAG);
+        needlePaintBorder.setStrokeWidth(5);
+        needlePaintBorder.setStyle(Paint.Style.STROKE);
+        needlePaintBorder.setColor(Color.parseColor("#ffffff"));
     }
 
 
